@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Egg Shop</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#FAFAF6;--ink:#1E3B2F;--muted:#4C6155;--card:#FFFFFF;--line:#1E3B2F;
+  --yolk:#F5B82E;--mark:#F5B82E;--shell:#e2c576;--hero:#1E3B2F;
+  --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  box-sizing:border-box;padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#14241C;--ink:#F3F1EA;--muted:#B9C6BC;--card:#1C3227;--line:#F3F1EA;--mark:#8A6A00}
+}
+:root[data-theme="dark"]{--bg:#14241C;--ink:#F3F1EA;--muted:#B9C6BC;--card:#1C3227;--line:#F3F1EA;--mark:#8A6A00}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1.05rem/1.6 var(--body)}
+h1,h2,h3{font-family:var(--display);line-height:1.05;margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--yolk);outline-offset:3px}
+
+/* hero */
+.hero{background:var(--hero);color:#F6F3EA;padding:calc(env(safe-area-inset-top,0px) + 20px) 6vw 72px}
+nav{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:48px}
+.logo{font:800 1.4rem var(--display);text-decoration:none}
+nav ul{display:flex;gap:24px;list-style:none;margin:0;padding:0}
+nav a{position:relative;text-decoration:none;padding:4px 0}
+nav ul a::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--yolk);transition:width .3s}
+nav ul a:hover::after,nav ul a:focus-visible::after{width:100%}
+.hero-grid{display:grid;gap:40px;align-items:center;max-width:1100px;margin:0 auto}
+@media(min-width:820px){.hero-grid{grid-template-columns:1.15fr .85fr}}
+.hero h1{font-size:clamp(2.6rem,7vw,5rem);font-weight:800}
+.hero p{max-width:46ch;font-size:1.15rem;margin:20px 0 32px;color:#DDE6DF}
+.row{display:flex;gap:14px;flex-wrap:wrap}
+
+/* buttons: color sweeps in on hover */
+.btn{--b:var(--yolk);--fg:#1E3B2F;--sw:#FFFDF8;--fgh:#1E3B2F;
+  position:relative;isolation:isolate;overflow:hidden;display:inline-block;
+  padding:14px 26px;border:2px solid var(--b);border-radius:999px;background:var(--b);color:var(--fg);
+  font:600 1rem var(--body);text-decoration:none;transition:color .3s,transform .2s}
+.btn::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--sw);transform:translateX(-101%);transition:transform .35s}
+.btn:hover::before,.btn:focus-visible::before{transform:none}
+.btn:hover,.btn:focus-visible{color:var(--fgh);transform:translateY(-2px)}
+.btn:active{transform:scale(.97)}
+.btn.ghost{--b:#F6F3EA;background:transparent;color:#F6F3EA;--sw:var(--yolk);--fgh:#1E3B2F}
+
+/* the cracking egg */
+.stage{display:grid;justify-items:center;gap:18px}
+.egg{--w:min(64vw,270px);position:relative;width:var(--w);height:calc(var(--w)*1.22);padding:0;border:0;background:none;cursor:pointer;animation:wobble 1.1s .9s 1}
+.half{position:absolute;inset:0;background:var(--shell);border-radius:50% 50% 50% 50%/62% 62% 38% 38%;
+  box-shadow:inset -16px -20px 0 rgba(30,59,47,.08);transition:transform .6s cubic-bezier(.3,1.5,.5,1)}
+.top{clip-path:polygon(0 0,100% 0,100% 54%,88% 46%,76% 56%,64% 46%,52% 56%,40% 46%,28% 56%,16% 46%,0 54%)}
+.bot{clip-path:polygon(0 54%,16% 46%,28% 56%,40% 46%,52% 56%,64% 46%,76% 56%,88% 46%,100% 54%,100% 100%,0 100%)}
+.yolk{position:absolute;left:50%;top:50%;width:46%;aspect-ratio:1;margin:-23% 0 0 -23%;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#FFD45A,#F08A00);transform:scale(0);
+  transition:transform .5s .1s cubic-bezier(.3,1.9,.5,1)}
+.egg:focus-visible,.egg.open{--o:1}
+.egg:focus-visible .top,.egg.open .top{transform:translate(-8%,-24%) rotate(-14deg)}
+.egg:focus-visible .bot,.egg.open .bot{transform:translate(4%,10%) rotate(5deg)}
+.egg:focus-visible .yolk,.egg.open .yolk{transform:scale(1)}
+@media(hover:hover){
+  .egg:hover .top{transform:translate(-8%,-24%) rotate(-14deg)}
+  .egg:hover .bot{transform:translate(4%,10%) rotate(5deg)}
+  .egg:hover .yolk{transform:scale(1)}
+}
+.hint{margin:0;font-size:.95rem;color:#B9C6BC}
+@keyframes wobble{0%,100%{rotate:0deg}20%{rotate:-7deg}45%{rotate:6deg}70%{rotate:-3deg}}
+
+/* sections */
+section{padding:84px 6vw}
+.wrap{max-width:1100px;margin:0 auto}
+h2{font-size:clamp(2rem,4.5vw,3.2rem);font-weight:800;margin-bottom:12px}
+.lead{max-width:52ch;color:var(--muted);margin:0 0 44px}
+
+/* product cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:24px;
+  transition:transform .25s,box-shadow .25s}
+.card:hover{transform:translate(-4px,-6px);box-shadow:8px 10px 0 var(--yolk)}
+.card h3{font-size:1.5rem;margin:18px 0 6px}
+.card p{margin:0 0 16px;color:var(--muted);font-size:.98rem}
+.pic{height:112px;display:flex;align-items:flex-end}
+.e{display:block;width:80px;height:100px;background:var(--c);border-radius:50% 50% 50% 50%/62% 62% 38% 38%;
+  box-shadow:inset -8px -10px 0 rgba(0,0,0,.08);transition:transform .3s}
+.card:hover .e{animation:wob .6s}
+@keyframes wob{0%,100%{rotate:0deg}25%{rotate:-12deg}75%{rotate:12deg}}
+.brown{--c:#C98B5B}
+.white{--c:#FFFDF8;border:2px solid #D9D6CC}
+.country{--c:#B5834F;background:
+  radial-gradient(circle at 30% 42%,#6B4A2A 0 2px,transparent 3px),
+  radial-gradient(circle at 64% 30%,#6B4A2A 0 2px,transparent 3px),
+  radial-gradient(circle at 52% 66%,#6B4A2A 0 2px,transparent 3px),
+  radial-gradient(circle at 26% 72%,#6B4A2A 0 1.5px,transparent 2.5px),
+  radial-gradient(circle at 72% 62%,#6B4A2A 0 1.5px,transparent 2.5px),#B5834F}
+.tray{display:grid;grid-template-columns:repeat(3,34px);gap:6px}
+.tray .e{width:34px;height:42px;box-shadow:inset -4px -5px 0 rgba(0,0,0,.08);transition:transform .3s}
+.card:hover .tray .e{transform:translateY(-8px)}
+.card:hover .tray .e:nth-child(2n){transition-delay:.06s}
+.card:hover .tray .e:nth-child(3n){transition-delay:.12s}
+.more{position:relative;font-weight:600;text-decoration:none}
+.more::after{content:"";position:absolute;left:0;bottom:-2px;height:3px;width:100%;background:var(--yolk);
+  transform:scaleX(.25);transform-origin:left;transition:transform .3s}
+.card:hover .more::after,.more:hover::after{transform:scaleX(1)}
+
+/* why people come back */
+.why{border-top:2px solid var(--line)}
+.why ul{list-style:none;margin:0;padding:0;display:grid;gap:36px}
+@media(min-width:820px){.why ul{grid-template-columns:repeat(3,1fr);gap:48px}}
+.why li{transition:transform .3s}
+.why li:hover{transform:translateY(-6px)}
+.why h3{font-size:1.6rem;margin-bottom:10px}
+.why h3 span{background:linear-gradient(var(--mark),var(--mark)) 0 90%/0% 45% no-repeat;transition:background-size .45s}
+.why li:hover h3 span{background-size:100% 45%}
+.why p{margin:0;color:var(--muted)}
+
+/* order band */
+.order{background:var(--hero);color:#F6F3EA;text-align:left}
+.order h2{max-width:14ch}
+.order p{max-width:44ch;color:#DDE6DF;margin:0 0 28px}
+footer{padding:36px 6vw;color:var(--muted);font-size:.95rem;border-top:2px solid var(--line);background:var(--card)}
+.footer-wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px}
+.footer-block h3{font-size:1.2rem;color:var(--ink);margin:0 0 10px}
+.footer-block p{margin:4px 0}
+.footer-bottom{max-width:1100px;margin:24px auto 0;padding-top:16px;border-top:1px solid var(--line);font-size:.85rem}
+.footer-block a{text-decoration:none}
+.footer-block a:hover{text-decoration:underline}
+
+/* more motion */
+.hero{position:relative;overflow:hidden}
+.hero>*{position:relative;z-index:1}
+.hero>.drift{position:absolute;inset:0;z-index:0;pointer-events:none}
+.fe{position:absolute;left:var(--x);bottom:-90px;width:var(--s);height:calc(var(--s)*1.25);background:rgba(255,253,248,.10);border-radius:50% 50% 50% 50%/62% 62% 38% 38%;animation:drift var(--d) linear infinite;animation-delay:var(--l)}
+.fe:nth-child(3n){background:rgba(245,184,46,.16)}
+@keyframes drift{from{transform:translateY(0) rotate(0)}to{transform:translateY(-125vh) rotate(160deg)}}
+
+nav{animation:drop .7s both}
+.hero h1,.hero p,.hero .row{animation:rise .85s cubic-bezier(.2,.8,.2,1) both}
+.hero p{animation-delay:.15s}
+.hero .row{animation-delay:.3s}
+@keyframes rise{from{opacity:0;transform:translateY(36px)}}
+@keyframes drop{from{opacity:0;transform:translateY(-24px)}}
+.hero .btn:not(.ghost){animation:pulse 2.4s 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(245,184,46,.65)}70%,100%{box-shadow:0 0 0 18px rgba(245,184,46,0)}}
+
+.egg{transition:transform .2s;animation:wobble 1.1s .9s 1,float 4s 2s ease-in-out infinite}
+.egg::after{content:"";position:absolute;left:12%;right:12%;bottom:-26px;height:18px;border-radius:50%;background:rgba(0,0,0,.3);filter:blur(6px);animation:shade 4s 2s ease-in-out infinite;z-index:-1}
+@keyframes float{0%,100%{translate:0 0}50%{translate:0 -14px}}
+@keyframes shade{0%,100%{translate:0 0;scale:1}50%{translate:0 14px;scale:.78}}
+
+.pic .e{animation:idle 3.2s ease-in-out infinite}
+.card:nth-child(2n) .e{animation-delay:-1.1s}
+.card:nth-child(3n) .e{animation-delay:-2.2s}
+@keyframes idle{50%{translate:0 -7px}}
+
+.band{overflow:hidden;background:var(--yolk);color:#1E3B2F;border-block:2px solid var(--line)}
+.track{display:flex;width:max-content;animation:slide 26s linear infinite}
+.band:hover .track{animation-play-state:paused}
+.track span{padding:14px 28px;white-space:nowrap;font:800 1.3rem var(--display)}
+.track span::after{content:"";display:inline-block;width:14px;height:18px;margin-left:56px;vertical-align:-2px;background:#1E3B2F;border-radius:50% 50% 50% 50%/62% 62% 38% 38%}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+.rv{opacity:0}
+.rv.in{opacity:1;animation:rise .85s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:var(--d,0s)}
+
+/* order form */
+.oform[hidden],.done[hidden]{display:none}
+.oform{max-width:560px}
+.oform label{display:block;margin:0 0 16px;font-weight:600}
+.oform input,.oform select,.oform textarea{display:block;width:100%;margin-top:6px;padding:13px 14px;border:2px solid transparent;border-radius:12px;background:#FFFDF8;color:#1E3B2F;font:400 1rem var(--body);transition:border-color .2s,transform .2s,box-shadow .2s}
+.oform input:hover,.oform select:hover,.oform textarea:hover{transform:translateY(-2px)}
+.oform input:focus,.oform select:focus,.oform textarea:focus{outline:none;border-color:var(--yolk);box-shadow:0 0 0 4px rgba(245,184,46,.35);transform:translateY(-2px)}
+.oform textarea{resize:vertical}
+.order .err{min-height:1.5em;margin:0 0 14px;color:#FFD45A;font-weight:600}
+.done{max-width:560px;padding:24px;border:2px solid var(--yolk);border-radius:18px;background:rgba(255,253,248,.08);animation:rise .6s cubic-bezier(.2,.8,.2,1) both}
+.done h3{font-size:1.8rem;margin-bottom:8px}
+.done pre{margin:0 0 20px;padding:14px;border-radius:12px;background:rgba(0,0,0,.25);white-space:pre-wrap;font:400 1rem/1.5 var(--body);color:#F6F3EA}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="drift" aria-hidden="true">
+    <span class="fe" style="--x:6%;--s:34px;--d:18s;--l:-4s"></span>
+    <span class="fe" style="--x:18%;--s:56px;--d:24s;--l:-14s"></span>
+    <span class="fe" style="--x:32%;--s:26px;--d:15s;--l:-9s"></span>
+    <span class="fe" style="--x:48%;--s:44px;--d:21s;--l:-2s"></span>
+    <span class="fe" style="--x:63%;--s:30px;--d:17s;--l:-12s"></span>
+    <span class="fe" style="--x:76%;--s:62px;--d:26s;--l:-7s"></span>
+    <span class="fe" style="--x:88%;--s:38px;--d:19s;--l:-16s"></span>
+    <span class="fe" style="--x:96%;--s:24px;--d:14s;--l:-5s"></span>
+  </div>
+  <nav>
+    <a class="logo" href="#">ELANGOVAN EGG SHOP</a>
+    <ul>
+      <li><a href="#eggs">Our eggs</a></li>
+      <li><a href="#why">Why people return</a></li>
+      <li><a href="#order">Order</a></li>
+    </ul>
+  </nav>
+  <div class="hero-grid">
+    <div>
+      <h1>Good eggs. That’s why you come back.</h1>
+      <p>Brown, white, and country eggs, checked by hand before they go into your tray.</p>
+      <div class="row">
+        <a class="btn" href="#order">Order today</a>
+        <a class="btn ghost" href="#eggs">See our eggs</a>
+      </div>
+    </div>
+    <div class="stage">
+      <button class="egg" id="egg" aria-label="Crack the egg">
+        <span class="half bot"></span>
+        <span class="yolk"></span>
+        <span class="half top"></span>
+      </button>
+      <p class="hint">Hover over the egg, or tap it.</p>
+    </div>
+  </div>
+</header>
+
+<div class="band" aria-hidden="true">
+  <div class="track">
+    <span>Fresh brown eggs</span><span>Fresh white eggs</span><span>Country eggs</span><span>Full trays</span><span>Checked one by one</span>
+    <span>Fresh brown eggs</span><span>Fresh white eggs</span><span>Country eggs</span><span>Full trays</span><span>Checked one by one</span>
+  </div>
+</div>
+
+<main>
+  <section id="eggs">
+    <div class="wrap">
+      <h2>Our eggs</h2>
+      <p class="lead">Pick your favorite and ask us for today’s rate.</p>
+      <div class="cards">
+        <article class="card">
+          <div class="pic"><span class="e brown"></span></div>
+          <h3>Brown eggs</h3>
+          <p>Our everyday egg for breakfast, curries, and baking.</p>
+          <a class="more" href="#order">Ask for today’s rate</a>
+        </article>
+        <article class="card">
+          <div class="pic"><span class="e white"></span></div>
+          <h3>White eggs</h3>
+          <p>Clean and mild, good for every kitchen.</p>
+          <a class="more" href="#order">Ask for today’s rate</a>
+        </article>
+        <article class="card">
+          <div class="pic"><span class="e country"></span></div>
+          <h3>Country eggs</h3>
+          <p>A traditional choice. Ask us what’s in stock today.</p>
+          <a class="more" href="#order">Ask for today’s rate</a>
+        </article>
+        <article class="card">
+          <div class="pic"><span class="tray"><i class="e brown"></i><i class="e brown"></i><i class="e brown"></i><i class="e brown"></i><i class="e brown"></i><i class="e brown"></i></span></div>
+          <h3>Full trays</h3>
+          <p>Buy a whole tray for your home, café, or bakery.</p>
+          <a class="more" href="#order">Ask for today’s rate</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="why" id="why">
+    <div class="wrap">
+      <h2>Why people come back</h2>
+      <p class="lead">Our customers return because they know what they will get.</p>
+      <ul>
+        <li><h3><span>Checked one by one</span></h3><p>Every egg is looked over before it goes into your tray.</p></li>
+        <li><h3><span>Fresh stock</span></h3><p>We restock often, so you are never buying old eggs.</p></li>
+        <li><h3><span>Cracked? We fix it.</span></h3><p>If an egg arrives broken, tell us and we will replace it.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="order" id="order">
+    <div class="wrap">
+      <h2>Try one tray. You’ll be back.</h2>
+      <p>Fill in your details and we will confirm your order with you.</p>
+      <div class="oform" id="oform">
+        <label>Your name<input id="f-name" autocomplete="name" placeholder="Full name"></label>
+        <label>Phone number<input id="f-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Mobile number"></label>
+        <label>Delivery address<textarea id="f-addr" rows="3" autocomplete="street-address" placeholder="House number, street, area, landmark"></textarea></label>
+        <label>Which eggs?<select id="f-type"><option>Brown eggs</option><option>White eggs</option><option>Country eggs</option><option>Full tray</option></select></label>
+        <label>How many?<input id="f-qty" placeholder="For example: 1 tray or 2 dozen"></label>
+        <p class="err" id="f-err" role="alert"></p>
+        <button class="btn" id="f-go" type="button">Place my order</button>
+      </div>
+      <div class="done" id="done" hidden>
+        <h3>Almost done!</h3>
+        <p>Tap the button to send this order to us on WhatsApp. We will confirm it with you.</p>
+        <pre id="sum"></pre>
+        <div class="row">
+          <a class="btn" id="wa" target="_blank" rel="noopener" href="#order">Send on WhatsApp</a>
+          <button class="btn ghost" id="edit" type="button">Change my order</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-wrap">
+    <div class="footer-block">
+      <h3>ELANGOVAN EGG SHOP</h3>
+      <p>Fresh brown eggs, white eggs, and country eggs.</p>
+    </div>
+    <div class="footer-block">
+      <h3>Address</h3>
+      <p>Enter your shop address here</p>
+      <p>City, Tamil Nadu, India</p>
+    </div>
+    <div class="footer-block">
+      <h3>Contact us</h3>
+      <p>Phone: <a href="tel:9944304010">9944304010</a></p>
+      <p>WhatsApp: <a href="https://wa.me/919944304010" target="_blank" rel="noopener">Chat with us</a></p>
+    </div>
+  </div>
+  <div class="footer-bottom">© <span id="footer-year">2026</span> Elangovan Egg Shop. All rights reserved.</div>
+</footer>
+
+<script>
+  var egg = document.getElementById('egg');
+  egg.addEventListener('click', function () {
+    if (window.matchMedia('(hover: none)').matches) egg.classList.toggle('open');
+  });
+
+  var hero = document.querySelector('.hero');
+  hero.addEventListener('mousemove', function (e) {
+    var r = egg.getBoundingClientRect();
+    var dx = (e.clientX - (r.left + r.width / 2)) / window.innerWidth;
+    var dy = (e.clientY - (r.top + r.height / 2)) / window.innerHeight;
+    egg.style.transform = 'perspective(700px) rotateY(' + dx * 40 + 'deg) rotateX(' + (-dy * 30) + 'deg)';
+  });
+  hero.addEventListener('mouseleave', function () { egg.style.transform = ''; });
+
+  var items = document.querySelectorAll('h2,.lead,.card,.why li,.order p,.order .row');
+  var io = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) {
+    es.forEach(function (x) {
+      if (x.isIntersecting) { x.target.classList.add('in'); io.unobserve(x.target); }
+    });
+  }, { threshold: 0.15 }) : null;
+  items.forEach(function (el) {
+    el.classList.add('rv');
+    el.style.setProperty('--d', (Array.prototype.indexOf.call(el.parentNode.children, el) * 0.12) + 's');
+    if (io) { io.observe(el); } else { el.classList.add('in'); }
+  });
+
+  var SHOP_WHATSAPP = '9944304010'; // shop number with country code, digits only
+  function $(id) { return document.getElementById(id); }
+  $('f-go').addEventListener('click', function () {
+    var name = $('f-name').value.trim(), phone = $('f-phone').value.trim();
+    var addr = $('f-addr').value.trim(), qty = $('f-qty').value.trim();
+    var err = $('f-err');
+    if (!name) { err.textContent = 'Please enter your name.'; $('f-name').focus(); return; }
+    if (phone.replace(/\D/g, '').length < 7) { err.textContent = 'Please enter a valid phone number.'; $('f-phone').focus(); return; }
+    if (!addr) { err.textContent = 'Please enter your delivery address.'; $('f-addr').focus(); return; }
+    if (!qty) { err.textContent = 'Please tell us how many eggs you want.'; $('f-qty').focus(); return; }
+    err.textContent = '';
+    var text = ['New egg order', 'Name: ' + name, 'Phone: ' + phone, 'Address: ' + addr, 'Eggs: ' + $('f-type').value, 'Quantity: ' + qty].join('\n');
+    $('sum').textContent = text;
+    $('wa').href =
+  'https://wa.me/' + SHOP_WHATSAPP +
+  '?text=' + encodeURIComponent(text);
+    $('oform').hidden = true;
+    $('done').hidden = false;
+  });
+  $('edit').addEventListener('click', function () {
+    $('done').hidden = true;
+    $('oform').hidden = false;
+  });
+</script>
+</body>
+</html>
